@@ -340,6 +340,7 @@ class OTPValidationView(APIView):
     def post(self, request, *args, **kwargs):
         try:
             serializer = OTPValidationSerializer(data=request.data)
+            print("hilo")
             if 'email' in request.session:
                 if serializer.is_valid():
                     email = request.session['email']
@@ -384,6 +385,10 @@ class PasswordReset(APIView):
                         if pass1 == pass2:
                             user.password = make_password(pass1)
                             user.save()
+                            
+                            # Send email upon successful password reset
+                            send_password_reset_email(email)
+
                             return Response({"message": "Password changed successfully."}, status=status.HTTP_200_OK)
                         return Response({"message": "Passwords do not match."}, status=status.HTTP_400_BAD_REQUEST)
                     return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
@@ -746,6 +751,10 @@ class InitiatePayment(APIView):
                         order_id=order_id,
                         is_paid=False
                     )
+
+                    # Send email upon successful payment initiation
+                    send_payment_initiation_email(email, amount, order_id)
+
                 else:
                     response_dict = {"error": "Payment initiation failed"}
 
@@ -754,7 +763,6 @@ class InitiatePayment(APIView):
                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 
@@ -784,7 +792,6 @@ class PaytmCallback(APIView):
                 # Extract necessary data from the callback
                 order_id = data.get('ORDERID')
                 status = data.get('STATUS')
-                print(status)
                 txn_token = data.get('TXNID')
                 amount = data.get('TXNAMOUNT')
                
@@ -795,21 +802,22 @@ class PaytmCallback(APIView):
                     payment_data.amount = amount
                     if status == 'TXN_SUCCESS':
                         payment_data.is_paid = True
+                        # Send email upon successful payment confirmation
+                        send_payment_confirmation_email(payment_data.email, amount, order_id)
                     else:
-                        return Response({'data':data,'text_error':'Checksum is verified but transaction has failed.'})
+                        return Response({'text_error':'Checksum is verified but transaction has failed.'})
                     payment_data.save()
                 except PaymentTransaction.DoesNotExist:
                     text_error = f"Payment data for order ID {order_id} not found in the database."
                     return Response({'text_error': text_error})
 
-                return Response({'data': data, 'text_success': text_success, 'verifySignature': verify_signature})
+                return Response({'text_success': text_success, 'verifySignature': verify_signature})
             else:
                 text_error = "Checksum is not verified."
-                return Response({'data': data,'text_error': text_error})
+                return Response({'text_error': text_error})
         else:
             text_error = "Invalid Request."
             return Response({'text_error':text_error})
-
 
 # ========================================================================================== #
 # ========================================================================================== #
@@ -986,6 +994,10 @@ class TicketCreateAPIView(generics.ListCreateAPIView):
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
             headers = self.get_success_headers(serializer.data)
+            
+            # Send email upon successful ticket creation
+            send_ticket_creation_email(email)
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         
         except Exception as e:

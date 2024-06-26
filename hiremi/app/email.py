@@ -21,3 +21,106 @@ def send_custom_email(subject, message, recipient_list, from_email=None, fail_si
         recipient_list,
         fail_silently=fail_silently,
     )
+
+
+def send_password_reset_email(email):
+    subject = 'Password Reset Successful'
+    message = (
+        "Dear User,\n\n"
+        "We are writing to inform you that your password has been successfully reset.\n\n"
+        "If you did not request this change, please contact us immediately for assistance.\n\n"
+        "Best regards,\n"
+        "Hiremi"
+    )
+    from_email = 'hiremiotp@gmail.com'
+    recipient_list = [email]
+    send_mail(subject, message, from_email, recipient_list)
+
+
+def send_ticket_creation_email(email):
+    subject = 'Ticket Raised Successfully'
+    message = (
+        "Dear Customer,\n\n"
+        "We have received your ticket and it has been successfully raised. "
+        "Our team will review your request and get back to you as soon as possible. "
+        "We appreciate your patience and understanding.\n\n"
+        "Thank you for reaching out to us.\n\n"
+        "Best regards,\n"
+        "Customer Support Team \n"
+        "Hiremi"
+    )
+    from_email = 'hiremiotp@gmail.com'
+    recipient_list = [email]
+    
+    send_mail(subject, message, from_email, recipient_list)
+
+
+
+
+def send_payment_initiation_email(email, amount, order_id):
+    subject = 'Payment Initiated Successfully'
+    message = (
+        "Dear Customer,\n\n"
+        "We have successfully initiated the payment for your order. "
+        "An amount of **{amount} INR** has been charged to your account. "
+        "Your order ID is **{order_id}**.\n\n"
+        "If you have any questions or concerns regarding this transaction, "
+        "please feel free to contact us.\n\n"
+        "Best regards,\n"
+        "Hiremi"
+    ).format(amount=amount, order_id=order_id)
+    from_email = 'hiremiotp@gmail.com'
+    recipient_list = [email]
+    
+    send_mail(subject, message, from_email, recipient_list)    
+
+
+
+def send_payment_confirmation_email(email, amount, order_id):
+    subject = 'Payment Successful'
+    message = (
+        "Dear Customer,\n\n"
+        "We are writing to confirm that your payment for the order with ID **{order_id}** "
+        "has been successfully processed. An amount of **{amount} INR** has been deducted from your account.\n\n"
+        "Thank you for choosing us.\n\n"
+        "Best regards,\n"
+        "Hiremi"
+    ).format(amount=amount, order_id=order_id)
+    from_email = 'hiremiotp@gmail.com'
+    recipient_list = [email]
+    
+    send_mail(subject, message, from_email, recipient_list)
+
+
+
+def send_job_application_confirmation_email(email, job_title):
+    subject = 'Job Application Submitted Successfully'
+    message = (
+        "Dear Applicant,\n\n"
+        "We are writing to confirm that your job application for the position of **{job_title}** "
+        "has been successfully submitted.\n\n"
+        "Our team will review your application and get back to you as soon as possible. "
+        "We appreciate your interest in joining our company.\n\n"
+        "Best regards,\n"
+        "Your Company"
+    ).format(job_title=job_title)
+    from_email = 'hiremiotp@gmail.com'
+    recipient_list = [email]
+    
+    send_mail(subject, message, from_email, recipient_list) 
+
+def send_internship_application_confirmation_email(email, internship_title):
+    subject = 'Internship Application Submitted Successfully'
+    message = (
+        "Dear Applicant,\n\n"
+        "We are writing to confirm that your internship application for the position of **{internship_title}** "
+        "has been successfully submitted.\n\n"
+        "Our team will review your application and get back to you as soon as possible. "
+        "We appreciate your interest in joining our company.\n\n"
+        "Best regards,\n"
+        "Your Company"
+    ).format(internship_title=internship_title)
+    from_email = 'hiremiotp@gmail.com'
+    recipient_list = [email]
+    
+    send_mail(subject, message, from_email, recipient_list)      
